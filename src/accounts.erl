@@ -4,7 +4,7 @@
 
 create(Number) ->
   case check(Number) of
-    {not_found} ->
+    {account_does_not_exist} ->
       % It is harcoded, because I have some trubles with standard function.
       % I will look into this problem
       Id = test_erlang_app:replace_for_dirty_update_counter(),
@@ -20,8 +20,8 @@ check(Number) ->
   F = fun() -> mnesia:match_object(Obj) end,
   {atomic, Result} = mnesia:transaction(F),
   if
-    length(Result) > 0 -> {exist};
-    true -> {not_found}
+    length(Result) > 0 -> {account_exist};
+    true -> {account_does_not_exist}
   end.
 
 new_account_record(Id, Number, Amount) ->
