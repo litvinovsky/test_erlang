@@ -24,10 +24,9 @@ all() ->
 check(Number) ->
   Obj = {account, '_', Number, '_'},
   F = fun() -> mnesia:match_object(Obj) end,
-  {atomic, Result} = mnesia:transaction(F),
-  if
-    length(Result) > 0 -> {account_exist};
-    true -> {account_does_not_exist}
+  case mnesia:transaction(F) of
+    {atomic, []} -> {account_does_not_exist};
+    {atomic, [Record]} -> {account_exist, Record}
   end.
 
 new_account_record(Id, Number, Amount) ->
