@@ -1,0 +1,1 @@
+-record(account, {id, number, amount = 0}).

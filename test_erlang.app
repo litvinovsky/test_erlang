@@ -2,7 +2,7 @@
   [
     {description, "app for interview"},
     {vsn, "0.1.0"},
-    {modules, [test_erlang_app, test_erlang_server, test_erlang_supervisor]},
+    {modules, [test_erlang_app, test_erlang_server, test_erlang_supervisor, accounts]},
     {mod, {test_erlang_app, []}},
     {applications, [mnesia]}
   ]
