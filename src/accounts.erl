@@ -15,6 +15,12 @@ create(Number) ->
     Result -> Result
   end.
 
+all() ->
+  Obj = {account, '_', '_', '_'},
+  F = fun() -> mnesia:match_object(Obj) end,
+  {atomic, Result} = mnesia:transaction(F),
+  Result.
+
 check(Number) ->
   Obj = {account, '_', Number, '_'},
   F = fun() -> mnesia:match_object(Obj) end,
