@@ -5,26 +5,33 @@
 create(Number) ->
   case check(Number) of
     {account_does_not_exist} ->
-      Id = erlang:make_ref(),
-      Obj = new_account_record(Id, Number, 0),
+      Obj = new_record(Number, 0),
       F = fun() -> mnesia:write(Obj) end,
       mnesia:transaction(F);
     Result -> Result
   end.
 
 all() ->
-  Obj = {account, '_', '_', '_'},
+  Obj = {account, '_', '_', '_', '_'},
   F = fun() -> mnesia:match_object(Obj) end,
   {atomic, Result} = mnesia:transaction(F),
   Result.
 
 check(Number) ->
-  Obj = {account, '_', Number, '_'},
+  Obj = {account, '_', Number, '_', '_'},
   F = fun() -> mnesia:match_object(Obj) end,
   case mnesia:transaction(F) of
     {atomic, []} -> {account_does_not_exist};
     {atomic, [Record]} -> {account_exist, Record}
   end.
 
-new_account_record(Id, Number, Amount) ->
-  #account{id = Id, number = Number, amount = Amount}.
+new_record(Number, Amount) ->
+  #account{id = erlang:make_ref(), number = Number, amount = Amount}.
+
+change_record(Record, amount, Value) ->
+  OldAmount = Record#account.amount,
+  Record#account{amount=OldAmount + Value};
+
+change_record(Record, reserve_amount, Value) ->
+  OldReserveAmount = Record#account.reserve_amount,
+  Record#account{reserve_amount=OldReserveAmount + Value}.

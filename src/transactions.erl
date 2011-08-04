@@ -4,13 +4,22 @@
 
 create(AccountNumber, Amount, Confirm) ->
   case accounts:check(AccountNumber) of
-    {account_exist, _Record} ->
-      Id = erlang:make_ref(),
-      Obj = new_transaction_record(Id, AccountNumber, Amount, Confirm),
-      F = fun() -> mnesia:write(Obj) end,
-      mnesia:transaction(F);
+    {account_exist, A} ->
+      Transaction = new_record(AccountNumber, Amount, Confirm),
+      Account = case Confirm of
+        true -> accounts:change_record(A, amount, Amount);
+        false -> accounts:change_record(A, reserve_amount, Amount)
+      end,
+      process_transaction(Account, Transaction);
     Result -> Result
   end.
+
+process_transaction(A = #account{}, T = #transaction{}) ->
+  F = fun() ->
+    mnesia:write(A),
+    mnesia:write(T)
+  end,
+  mnesia:transaction(F).
 
 all(AccountNumber) ->
   case accounts:check(AccountNumber) of
@@ -22,5 +31,5 @@ all(AccountNumber) ->
     Other -> Other
   end.
 
-new_transaction_record(Id, AccountNumber, Amount, Confirm) ->
-  #transaction{id = Id, account_number = AccountNumber, amount = Amount, confirm = Confirm}.
+new_record(AccountNumber, Amount, Confirm) ->
+  #transaction{id = erlang:make_ref(), account_number = AccountNumber, amount = Amount, confirm = Confirm}.
