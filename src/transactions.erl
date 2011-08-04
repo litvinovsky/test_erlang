@@ -5,10 +5,7 @@
 create(AccountNumber, Amount, Confirm) ->
   case accounts:check(AccountNumber) of
     {account_exist, _Record} ->
-      % It is harcoded, because I have some trubles with standard function.
-      % I will look into this problem
-      Id = test_erlang_app:replace_for_dirty_update_counter(),
-
+      Id = erlang:make_ref(),
       Obj = new_transaction_record(Id, AccountNumber, Amount, Confirm),
       F = fun() -> mnesia:write(Obj) end,
       mnesia:transaction(F);
