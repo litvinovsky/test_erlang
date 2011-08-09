@@ -17,6 +17,12 @@ all() ->
   {atomic, Result} = mnesia:transaction(F),
   Result.
 
+apply_transaction(A = #account{}, T = #transaction{}) ->
+  case T#transaction.confirm of
+    true -> accounts:deposit(A, T#transaction.amount);
+    false -> accounts:reserve(A, T#transaction.amount)
+  end.
+
 check(Number) ->
   Obj = {account, '_', Number, '_', '_'},
   F = fun() -> mnesia:match_object(Obj) end,

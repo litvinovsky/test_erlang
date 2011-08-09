@@ -6,20 +6,14 @@ create(AccountNumber, Amount, Confirm) ->
   case accounts:check(AccountNumber) of
     {account_exist, A} ->
       Transaction = new_record(AccountNumber, Amount, Confirm),
-      Account = case Confirm of
-        true -> accounts:deposit(A, Amount);
-        false -> accounts:reserve(A, Amount)
+      Account = accounts:apply_transaction(A, Transaction),
+      F = fun() ->
+        mnesia:write(Account),
+        mnesia:write(Transaction)
       end,
-      process_transaction(Account, Transaction);
+      mnesia:transaction(F);
     Result -> Result
   end.
-
-process_transaction(A = #account{}, T = #transaction{}) ->
-  F = fun() ->
-    mnesia:write(A),
-    mnesia:write(T)
-  end,
-  mnesia:transaction(F).
 
 all(AccountNumber) ->
   case accounts:check(AccountNumber) of
