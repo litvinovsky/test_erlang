@@ -28,10 +28,10 @@ check(Number) ->
 new_record(Number, Amount) ->
   #account{id = erlang:make_ref(), number = Number, amount = Amount}.
 
-change_record(Record, amount, Value) ->
+deposit(Record, Amount) ->
   OldAmount = Record#account.amount,
-  Record#account{amount=OldAmount + Value};
+  Record#account{amount=OldAmount + Amount}.
 
-change_record(Record, reserve_amount, Value) ->
+reserve(Record, Amount) ->
   OldReserveAmount = Record#account.reserve_amount,
-  Record#account{reserve_amount=OldReserveAmount + Value}.
+  Record#account{reserve_amount=OldReserveAmount + Amount}.

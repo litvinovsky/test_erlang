@@ -7,8 +7,8 @@ create(AccountNumber, Amount, Confirm) ->
     {account_exist, A} ->
       Transaction = new_record(AccountNumber, Amount, Confirm),
       Account = case Confirm of
-        true -> accounts:change_record(A, amount, Amount);
-        false -> accounts:change_record(A, reserve_amount, Amount)
+        true -> accounts:deposit(A, Amount);
+        false -> accounts:reserve(A, Amount)
       end,
       process_transaction(Account, Transaction);
     Result -> Result
