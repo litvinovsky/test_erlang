@@ -31,6 +31,9 @@ check(Number) ->
     {atomic, [Record]} -> {account_exist, Record}
   end.
 
+has_amount(A = #account{}, Amount) when A#account.amount >= abs(Amount) -> true;
+has_amount(_A = #account{}, _Amount) -> false.
+
 new_record(Number, Amount) ->
   #account{id = erlang:make_ref(), number = Number, amount = Amount}.
 
